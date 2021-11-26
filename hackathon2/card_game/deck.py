@@ -9,7 +9,7 @@ class Deck:
     def build(self):
         '''Tạo bộ bài'''
         all_rank = ('A',2,3,4,5,6,7,8,9)
-        all_suit = ('♠', '♣', '♦', '♥')
+        all_suit = ('S', 'C', 'D', 'H')
         self.all_card = []
         for r in all_rank:
             for s in all_suit:

@@ -10,16 +10,17 @@ class Game:
 
     def __init__(self):
         self.players = []
-        self.deck = Deck()
-        self.deck.build()
         self.in_game = False
 
     def setup(self, n=2):
         '''Khởi tạo trò chơi, nhập số lượng và lưu thông tin người chơi'''
-        self.n_players = n
-        for i in range(n):
-            player_name = input('Tên người chơi:')
-            self.players.append(Player(player_name))
+        if self.in_game:
+            print('Trò chơi đã bắt đầu!')
+        else:
+            self.n_players = n
+            for i in range(n):
+                player_name = input('Tên người chơi:')
+                self.players.append(Player(player_name))
 
     def guide(self):
         '''Hiển thị menu chức năng/hướng dẫn chơi'''
@@ -27,15 +28,15 @@ class Game:
             in_game = "Đang chơi"
             dealed = 'Đã chia'
             flip_card = 'Có thể lật bài'
+            rm_player = 'Đang chơi, không thể loại'
         else:
             in_game = "Có thể thêm"
             dealed = 'Có thể chia'
             flip_card = 'Chưa chia bài'
-        
-        if self.n_players > 2:
-            rm_player = "Có thể loại"
-        else:
-            rm_player = "Số người chơi tối thiểu rồi"
+            if self.n_players > 2:
+                rm_player = "Có thể loại"
+            else:
+                rm_player = "Số người chơi tối thiểu rồi"
         print(f"1. Danh sách người chơi ({self.n_players})")
         print(f"2. Thêm người chơi ({in_game})")
         print(f"3. Loại người chơi ({rm_player})")
@@ -53,20 +54,26 @@ class Game:
 
     def add_player(self):
         '''Thêm một người chơi mới'''
-        player_name = input('Tên người chơi: ')
-        self.players.append(Player(player_name))
+        if self.in_game:
+            print('Đã bắt đầu chơi, chờ lượt sau.')
+        else:
+            player_name = input('Tên người chơi: ')
+            self.players.append(Player(player_name))
 
     def remove_player(self):
         '''
         Loại một người chơi
         Mỗi người chơi có một ID (có thể lấy theo index trong list)
         '''
-        self.list_players()
-        if len(self.players) > 2:
-            player_id = int(input('ID của người chơi: ')) - 1
-            self.players.pop(player_id)
-        else:
-            print('Số lượng người chơi tối thiểu')
+        if self.in_game:
+            print('Đã bắt đầu chơi, không thể bỏ cuộc.')
+        else: 
+            self.list_players()
+            if len(self.players) > 2:
+                player_id = int(input('ID của người chơi: ')) - 1
+                self.players.pop(player_id)
+            else:
+                print('Số lượng người chơi tối thiểu')
 
     def deal_card(self):
         '''Chia bài cho người chơi'''
@@ -74,6 +81,8 @@ class Game:
             print('Đã chia bài')
         else:
             self.in_game = True
+            self.deck = Deck()
+            self.deck.build()
             self.deck.shuffle_card()
             for i in range(3):
                 for p in self.players:
@@ -81,8 +90,14 @@ class Game:
 
     def flip_card(self):
         '''Lật bài tất cả người chơi, thông báo người chiến thắng'''
-        for p in self.players:
-            p.flip_card()
+        if self.in_game:
+            winner = max(self.players)
+            print(f"Người chiến thắng là: {winner.name}; số điểm là: {winner.point}")
+            for p in self.players:
+                p.flip_card()
+            self.in_game = False
+        else:
+            print("Chưa chia bài, không thể lật.")
 
 if __name__ == "__name__":
     g = Game()
